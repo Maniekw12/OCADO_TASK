@@ -20,7 +20,6 @@ public class DataParser {
         ObjectMapper objectMapper = new ObjectMapper();
         List<Order> orders = objectMapper.readValue(new File(filePath), new TypeReference<List<Order>>() {});
 
-        // Ensure promotions list is not null for any order
         for (Order order : orders) {
             if (order.getPromotions() == null) {
                 order.setPromotions(new ArrayList<>());
