@@ -3,18 +3,21 @@ package org.example;
 import org.example.models.Order;
 import org.example.models.PaymentMethod;
 import org.example.parser.DataParser;
+import org.example.util.DataValidator;
+import org.example.optimizer.PaymentOptimizationService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class PaymentOptimizer {
 
 	public static void main(String[] args) {
-		if (args.length < 2) {
-			return;
-		}
+		DataValidator.ValidateArgsNum(args.length);
 
 		String ordersFile = args[0];
 		String paymentMethodsFile = args[1];
@@ -23,14 +26,15 @@ public class PaymentOptimizer {
 			List<PaymentMethod> paymentMethods = DataParser.parsePaymentMethods(paymentMethodsFile);
 			List<Order> orders = DataParser.parseOrders(ordersFile);
 
-			System.out.println("=== Payment Methods ===");
-			for (PaymentMethod method : paymentMethods) {
-				System.out.println(method.getId() + " | " + method.getDiscount() + "% | Limit: " + method.getLimit());
-			}
+			PaymentOptimizationService optimizationService = new PaymentOptimizationService(orders, paymentMethods);
 
-			System.out.println("\n=== Orders ===");
-			for (Order order : orders) {
-				System.out.println(order.getId() + " | Value: " + order.getValue() + " | Promotions: " + order.getPromotions());
+			optimizationService.optimize();
+
+			Map<String, BigDecimal> paymentSummary = optimizationService.getSpentPerMethod();
+
+			System.out.println("\n=== Payment Summary ===");
+			for (Map.Entry<String, BigDecimal> entry : paymentSummary.entrySet()) {
+				System.out.println(entry.getKey() + " " + entry.getValue().setScale(2, BigDecimal.ROUND_HALF_UP));
 			}
 
 		} catch (IOException e) {
@@ -38,5 +42,4 @@ public class PaymentOptimizer {
 			e.printStackTrace();
 		}
 	}
-
 }
