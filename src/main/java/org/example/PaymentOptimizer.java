@@ -9,26 +9,20 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.IOException;
 import java.util.List;
 
-@SpringBootApplication
 public class PaymentOptimizer {
 
 	public static void main(String[] args) {
 		if (args.length < 2) {
-			System.out.println("Please provide both file paths: orders file and payment methods file.");
 			return;
 		}
 
-		// Ścieżki do plików, które przekazujesz w argumentach
 		String ordersFile = args[0];
 		String paymentMethodsFile = args[1];
 
 		try {
-			// Wczytanie PaymentMethods
 			List<PaymentMethod> paymentMethods = DataParser.parsePaymentMethods(paymentMethodsFile);
-			// Wczytanie Orders
 			List<Order> orders = DataParser.parseOrders(ordersFile);
 
-			// Wypisanie wczytanych danych
 			System.out.println("=== Payment Methods ===");
 			for (PaymentMethod method : paymentMethods) {
 				System.out.println(method.getId() + " | " + method.getDiscount() + "% | Limit: " + method.getLimit());
