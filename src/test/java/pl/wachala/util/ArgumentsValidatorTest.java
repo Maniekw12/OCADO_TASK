@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ArgumentsValidatorTest {
 
-    private ArgumentsValidator validator = new ArgumentsValidator();
+    private final ArgumentsValidator validator = new ArgumentsValidator();
 
     @Test
     public void ShouldThrowRuntimeExceptionWhenDataIsNotConsistent() {
@@ -18,7 +18,7 @@ public class ArgumentsValidatorTest {
         int argsNum = 1;
 
         //when
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> validator.validateArgsNum(argsNum));
+        assertThrows(RuntimeException.class, () -> validator.validateArgsNum(argsNum));
     }
 
     @Test
@@ -36,7 +36,7 @@ public class ArgumentsValidatorTest {
         int argsNum = 56;
 
         //when
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+        assertThrows(RuntimeException.class, () -> {
             validator.validateArgsNum(argsNum);
         });
     }

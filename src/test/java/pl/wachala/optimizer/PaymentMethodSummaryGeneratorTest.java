@@ -63,8 +63,10 @@ public class PaymentMethodSummaryGeneratorTest {
         String expected = "CARD1 90.00";
         assertEquals(expected, outContent.toString().strip());
     }
+
     @Test
     void shouldGenerateSummaryForPartialPointsPayment() {
+        //given
         Map<String, DiscountOption> discountAssignment = new HashMap<>();
         discountAssignment.put("ORDER1", DiscountOption.builder()
                 .orderId("ORDER1")
@@ -76,8 +78,10 @@ public class PaymentMethodSummaryGeneratorTest {
                 .valueAfterDiscount(new BigDecimal("90.00"))
                 .build());
 
+        //when
         generator.generateSummary(discountAssignment);
 
+        //then
         String[] lines = outContent.toString().strip().split("\n");
         assertEquals(2, lines.length);
 
