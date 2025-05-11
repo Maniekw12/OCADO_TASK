@@ -1,4 +1,4 @@
-package org.example.models;
+package pl.wachala.models;
 
 import lombok.*;
 
@@ -10,8 +10,9 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Order {
     private String id;
     private BigDecimal value;
-    List<String> promotions;
+    private List<String> promotions;
 }
