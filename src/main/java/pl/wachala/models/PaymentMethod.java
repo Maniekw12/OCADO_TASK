@@ -1,4 +1,4 @@
-package org.example.models;
+package pl.wachala.models;
 
 import lombok.*;
 
@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class PaymentMethod {
     private String id;
     private int discount;
