@@ -27,7 +27,7 @@ public class DataParser {
 
 
         if (!methodsValidation(paymentMethods)) {
-            throw new IllegalArgumentException("Lista metod płatności musi zawierać co najmniej jedną metodę 'PUNKTY' oraz co najmniej jedną inną metodę.");
+            throw new IllegalArgumentException("The list of payment methods must include at least one method of type 'POINTS' and at least one other payment method.");
         }
 
         return paymentMethods;
