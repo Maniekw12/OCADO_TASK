@@ -62,12 +62,12 @@ public class DataParserTest {
                 .build();
         Order third = Order.builder()
                 .id("ORDER3")
-                .value(new BigDecimal("150.57"))
+                .value(new BigDecimal("150.00"))
                 .promotions(Arrays.asList("mZysk", "BosBankrut"))
                 .build();
         Order fourth = Order.builder()
                 .id("ORDER4")
-                .value(new BigDecimal("50.99"))
+                .value(new BigDecimal("50.00"))
                 .promotions(Collections.emptyList())
                 .build();
 
@@ -103,6 +103,21 @@ public class DataParserTest {
             parser.parsePaymentMethods("src/test/resources/emptyPaymentMethods.json");
         });
     }
+
+    @Test
+    void testParsePaymentMethodsMissingPoints() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            parser.parsePaymentMethods("src/test/resources/paymentMethods_missing_points.json");
+        });
+    }
+
+    @Test
+    void testParsePaymentMethodsOnlyPoints() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            parser.parsePaymentMethods("src/test/resources/paymentMethods_only_points.json");
+        });
+    }
+
 
 
 }
