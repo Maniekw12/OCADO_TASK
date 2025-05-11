@@ -21,9 +21,18 @@ public class DataParser {
     private final ObjectMapper mapper;
 
     public List<PaymentMethod> parsePaymentMethods(String paymentMethodsFile) throws IOException {
-        return mapper.readValue(new File(paymentMethodsFile), new TypeReference<>() {
+        List<PaymentMethod> paymentMethods = mapper.readValue(new File(paymentMethodsFile), new TypeReference<>() {
         });
+
+
+
+        if (!methodsValidation(paymentMethods)) {
+            throw new IllegalArgumentException("Lista metod płatności musi zawierać co najmniej jedną metodę 'PUNKTY' oraz co najmniej jedną inną metodę.");
+        }
+
+        return paymentMethods;
     }
+
 
     public List<Order> parseOrders(String filePath) throws IOException {
         List<Order> orders = mapper.readValue(new File(filePath), new TypeReference<>() {
@@ -36,6 +45,20 @@ public class DataParser {
         }
 
         return orders;
+    }
+
+    private boolean methodsValidation(List<PaymentMethod> paymentMethods){
+        boolean hasPoints = false;
+        boolean hasOther = false;
+
+        for (PaymentMethod method : paymentMethods) {
+            if ("PUNKTY".equalsIgnoreCase(method.getId())) {
+                hasPoints = true;
+            } else {
+                hasOther = true;
+            }
+        }
+        return hasPoints && hasOther;
     }
 
 }
