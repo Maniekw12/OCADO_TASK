@@ -7,6 +7,7 @@ import pl.wachala.models.Order;
 import pl.wachala.models.PaymentMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import pl.wachala.util.Consts;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,10 +25,8 @@ public class DataParser {
         List<PaymentMethod> paymentMethods = mapper.readValue(new File(paymentMethodsFile), new TypeReference<>() {
         });
 
-
-
         if (!methodsValidation(paymentMethods)) {
-            throw new IllegalArgumentException("The list of payment methods must include at least one method of type 'POINTS' and at least one other payment method.");
+            throw new IllegalArgumentException("Payment methods have to contain " + Consts.LOYALTY_POINTS_PAYMENT_METHOD_ID + " and at least a single other method.");
         }
 
         return paymentMethods;
@@ -47,12 +46,12 @@ public class DataParser {
         return orders;
     }
 
-    private boolean methodsValidation(List<PaymentMethod> paymentMethods){
+    private boolean methodsValidation(List<PaymentMethod> paymentMethods) {
         boolean hasPoints = false;
         boolean hasOther = false;
 
         for (PaymentMethod method : paymentMethods) {
-            if ("PUNKTY".equalsIgnoreCase(method.getId())) {
+            if (Consts.LOYALTY_POINTS_PAYMENT_METHOD_ID.equalsIgnoreCase(method.getId())) {
                 hasPoints = true;
             } else {
                 hasOther = true;

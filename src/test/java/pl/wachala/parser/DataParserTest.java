@@ -3,7 +3,6 @@ package pl.wachala.parser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.wachala.models.Order;
 import pl.wachala.models.PaymentMethod;
-import pl.wachala.parser.DataParser;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -60,29 +60,25 @@ public class PaymentMethodAssignerTest {
 
         PaymentMethod points = new PaymentMethod("PUNKTY", 15, new BigDecimal("100.00"));
 
-        List<PaymentMethod> promotions = Arrays.asList(points);
+        List<PaymentMethod> promotions = Collections.singletonList(points);
 
-        // when
-        // then
+        // when & then
         assertThrows(IllegalStateException.class, () -> {
             Map<String, DiscountOption> result = assigner.assign(orders, promotions);
         });
-
     }
 
     @Test
     void shouldThrowExceptionWhenLackOfAnyPaymentMethodAvailable() {
         // given
-        Order order1 = new Order("ORDER1", new BigDecimal("100.00"), Arrays.asList("mZysk"));
-        Order order2 = new Order("ORDER2", new BigDecimal("200.00"), Arrays.asList("BosBankrut"));
+        Order order1 = new Order("ORDER1", new BigDecimal("100.00"), Collections.singletonList("mZysk"));
+        Order order2 = new Order("ORDER2", new BigDecimal("200.00"), Collections.singletonList("BosBankrut"));
         Order order3 = new Order("ORDER3", new BigDecimal("150.00"), Arrays.asList("mZysk", "BosBankrut"));
         Order order4 = new Order("ORDER4", new BigDecimal("50.00"), Collections.emptyList());
-
         List<Order> orders = Arrays.asList(order1, order2, order3, order4);
+        List<PaymentMethod> promotions = Collections.emptyList();
 
-        List<PaymentMethod> promotions = Arrays.asList();
-        // when
-        // then
+        // when & then
         assertThrows(IllegalStateException.class, () -> {
             Map<String, DiscountOption> result = assigner.assign(orders, promotions);
         });
@@ -110,13 +106,16 @@ public class PaymentMethodAssignerTest {
 
     @Test
     void shouldAssignDefaultWhenNoPointsAvailable() {
+        //given
         Order order = new Order("ORDER1", new BigDecimal("100.00"), List.of("UNKNOWN_CARD"));
 
         PaymentMethod defaultCard = new PaymentMethod("DEFAULT", 0, new BigDecimal("500.00"));
         PaymentMethod points = new PaymentMethod("PUNKTY", 0, new BigDecimal("0.00"));
 
+        //when
         Map<String, DiscountOption> result = assigner.assign(List.of(order), List.of(defaultCard,points));
 
+        //then
         DiscountOption opt = result.get("ORDER1");
         assertEquals("DEFAULT", opt.getPromoMethodId());
         assertEquals(BigDecimal.ZERO, opt.getDiscount());
@@ -124,13 +123,16 @@ public class PaymentMethodAssignerTest {
 
     @Test
     void shouldAssignPointsWhenPointAvailable() {
+        //given
         Order order = new Order("ORDER1", new BigDecimal("100.00"), List.of("UNKNOWN_CARD"));
 
         PaymentMethod defaultCard = new PaymentMethod("DEFAULT", 0, new BigDecimal("500.00"));
         PaymentMethod points = new PaymentMethod("PUNKTY", 0, new BigDecimal("1000.00"));
 
+        //when
         Map<String, DiscountOption> result = assigner.assign(List.of(order), List.of(defaultCard,points));
 
+        //then
         DiscountOption opt = result.get("ORDER1");
         assertEquals("PUNKTY", opt.getPromoMethodId());
         assertEquals(new BigDecimal("0.00"), opt.getDiscount());
@@ -138,14 +140,17 @@ public class PaymentMethodAssignerTest {
 
     @Test
     void shouldChooseCardWithHigherDiscountWhenBothAreInPromotionList() {
+        //given
         Order order = new Order("ORDER1", new BigDecimal("100.00"), List.of("BANK1", "BANK2"));
 
         PaymentMethod bank1 = new PaymentMethod("BANK1", 10, new BigDecimal("100.00"));
         PaymentMethod bank2 = new PaymentMethod("BANK2", 1, new BigDecimal("300.00")); // higher limit
         PaymentMethod defaultCard = new PaymentMethod("PUNKTY", 0, new BigDecimal("10.00"));
 
+        //when
         Map<String, DiscountOption> result = assigner.assign(List.of(order), List.of(bank1, bank2, defaultCard));
 
+        //then
         assertEquals("BANK1", result.get("ORDER1").getPromoMethodId());
     }
 
@@ -174,12 +179,15 @@ public class PaymentMethodAssignerTest {
 
     @Test
     void shouldHandleSmallOrderValueGracefully() {
+        //given
         Order order = new Order("ORDER1", new BigDecimal("0.99"), Collections.emptyList());
         PaymentMethod points = new PaymentMethod("PUNKTY", 10, new BigDecimal("100.00"));
         PaymentMethod defaultCard = new PaymentMethod("DEFAULT", 0, new BigDecimal("500.00"));
 
+        //when
         Map<String, DiscountOption> result = assigner.assign(List.of(order), List.of(points, defaultCard));
 
+        //then
         DiscountOption opt = result.get("ORDER1");
         assertTrue(opt.getDiscount().compareTo(BigDecimal.ZERO) >= 0);
         assertEquals(new BigDecimal("0.99").subtract(opt.getDiscount()), opt.getValueAfterDiscount());
@@ -188,22 +196,24 @@ public class PaymentMethodAssignerTest {
 
     @Test
     void testDefaultPaymentMethodAccess() {
+        //given
         List<PaymentMethod> paymentMethods = List.of(
                 new PaymentMethod("CARD1", 0, new BigDecimal("100.00")),
                 new PaymentMethod("PUNKTY", 0, new BigDecimal("0.00"))
         );
 
+        //when
         String defaultMethod = assigner.getDefaultPaymentMethod(paymentMethods);
+
+        //then
         assertEquals("CARD1", defaultMethod);
     }
-
-
 
     private void assertDiscountOption(Map<String, DiscountOption> result, String orderId, BigDecimal expectedDiscount, BigDecimal expectedValueAfterDiscount, String expectedPromoMethodId) {
         assertTrue(result.containsKey(orderId));
         DiscountOption option = result.get(orderId);
-        assertTrue(option.getDiscount().compareTo(expectedDiscount) == 0);
-        assertTrue(option.getValueAfterDiscount().compareTo(expectedValueAfterDiscount) == 0);
+        assertEquals(0, option.getDiscount().compareTo(expectedDiscount));
+        assertEquals(0, option.getValueAfterDiscount().compareTo(expectedValueAfterDiscount));
         assertEquals(expectedPromoMethodId, option.getPromoMethodId());
     }
 

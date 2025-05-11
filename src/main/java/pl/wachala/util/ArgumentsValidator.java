@@ -1,8 +1,10 @@
 package pl.wachala.util;
 
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@NoArgsConstructor
 public class ArgumentsValidator {
 
     public void validateArgsNum(int argsNum) {
